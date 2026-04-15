@@ -1,0 +1,178 @@
+#################################
+#### hazelcast-service ##########
+#################################
+
+info:
+  component: Hazelcast Cache Service
+
+---
+
+spring:
+  application:
+    name: hazelcast-service
+
+---
+
+spring:
+  profiles:
+    active: local
+
+---
+
+spring:
+  profiles: local
+
+server:
+  port: 8093
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+hazelcast:
+  cluster-name: hazelcast-local-cluster
+  network:
+    port: 5701
+    port-auto-increment: true
+    join:
+      multicast:
+        enabled: true
+        multicast-group: 224.2.2.3
+        multicast-port: 54327
+      tcp-ip:
+        enabled: false
+  map:
+    default:
+      time-to-live-seconds: 300
+      max-idle-seconds: 60
+      eviction-policy: LRU
+      max-size: 1000
+    session-cache:
+      time-to-live-seconds: 1800
+      max-idle-seconds: 300
+      eviction-policy: LRU
+      max-size: 5000
+
+spring:
+  cache:
+    type: hazelcast
+  session:
+    store-type: hazelcast
+    hazelcast:
+      map-name: spring:session:sessions
+      flush-mode: on-save
+
+logging:
+  level:
+    com.hazelcast: INFO
+    root: INFO
+
+---
+
+spring:
+  profiles: dev
+
+server:
+  port: 8093
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.250.238.108:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+hazelcast:
+  cluster-name: hazelcast-dev-cluster
+  network:
+    port: 5701
+    port-auto-increment: true
+    join:
+      multicast:
+        enabled: false
+      tcp-ip:
+        enabled: true
+        members: 10.250.238.101:5701,10.250.238.102:5701
+  map:
+    default:
+      time-to-live-seconds: 300
+      max-idle-seconds: 60
+      eviction-policy: LRU
+      max-size: 1000
+    session-cache:
+      time-to-live-seconds: 1800
+      max-idle-seconds: 300
+      eviction-policy: LRU
+      max-size: 5000
+
+spring:
+  cache:
+    type: hazelcast
+  session:
+    store-type: hazelcast
+    hazelcast:
+      map-name: spring:session:sessions
+      flush-mode: on-save
+
+logging:
+  level:
+    com.hazelcast: INFO
+    root: INFO
+
+---
+
+spring:
+  profiles: prod
+
+server:
+  port: 8093
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.250.238.108:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+hazelcast:
+  cluster-name: hazelcast-prod-cluster
+  network:
+    port: 5701
+    port-auto-increment: false
+    join:
+      multicast:
+        enabled: false
+      tcp-ip:
+        enabled: true
+        members: 10.250.238.101:5701,10.250.238.102:5701,10.250.238.103:5701
+  map:
+    default:
+      time-to-live-seconds: 600
+      max-idle-seconds: 120
+      eviction-policy: LRU
+      max-size: 5000
+    session-cache:
+      time-to-live-seconds: 3600
+      max-idle-seconds: 600
+      eviction-policy: LRU
+      max-size: 20000
+  management-center:
+    enabled: true
+    url: http://10.250.238.110:8080/hazelcast-mancenter
+
+spring:
+  cache:
+    type: hazelcast
+  session:
+    store-type: hazelcast
+    hazelcast:
+      map-name: spring:session:sessions
+      flush-mode: on-save
+
+logging:
+  level:
+    com.hazelcast: WARN
+    root: WARN
